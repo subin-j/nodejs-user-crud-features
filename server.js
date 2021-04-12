@@ -3,14 +3,14 @@ const { PORT } = process.env
 const http = require('http')
 const app = require('./app') 
 const server = http.createServer(app) // Server 는 express 앱에 의존성을 가집니다.
-const prisma = require('./prisma')
+const mongoose = require('mongoose')
 
 const start = async () => {
   try {
     server.listen(PORT, () => console.log(`Server is listening on ${PORT}`))
   } catch (err) {
     console.error(err)
-    await prisma.$disconnect()
+    await mongoose.$disconnect()
   }
 }
 
