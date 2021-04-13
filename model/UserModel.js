@@ -21,8 +21,14 @@ const UserSchema = new Schema({
     username: {
         type: String,
         required: true
+    },
+    deletedAt: {
+        type: Date,
     }
-});
+},
+    {
+        timestamps: true
+    })
 
 UserSchema.pre('save', async function(next) {
     const user = this
@@ -39,8 +45,8 @@ UserSchema.methods.generateAuthToken = function() {
     return token
 }
 
-UserSchema.statics.findByEmail = async(email) => {
-    const user = await UserModel.findOne({ email })
+UserSchema.statics.findByEmail = (email) => {
+    const user = UserModel.findOne({ email })
     return user
 }
 

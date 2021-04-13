@@ -6,12 +6,11 @@ const { UserService } = require('../services')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
-
 const signUp = async (req, res, next) => {
     try {
         const { email, password, userType, username } = req.body
 
-        const foundUser = User.findByEmail(email)
+        const foundUser = await User.findByEmail(email)
         if (foundUser) {
             return res.status(400).json({
                 message: 'EMAIL_ALREADY_EXIST'
@@ -33,7 +32,6 @@ const signUp = async (req, res, next) => {
 const logIn = async (req, res, next) => {
     try {
         const { email, password: inputPassword } = req.body
-
         const foundUser = await User.findByEmail(email)
 
         if (!foundUser) {
@@ -42,10 +40,7 @@ const logIn = async (req, res, next) => {
             })
         }
 
-
         const { id, password: hashedPassword } = foundUser
-        console.log(inputPassword, hashedPassword)
-        console.log(foundUser)
         const isValidPassword = await bcrypt.compare(inputPassword, hashedPassword)
 
         if (!isValidPassword) {
@@ -60,12 +55,19 @@ const logIn = async (req, res, next) => {
             token
         })
 
-
     } catch (err) {
         next(err)
     }
 }
 
+const deleteUser = async (req, res, next) => {
+    try {
+        console.log('delete?')
+
+    } catch (err) {
+        next(err)
+    }
+} 
 
 router.post('/signup', signUp)
 router.post('/login', logIn)
