@@ -1,9 +1,10 @@
 require('dotenv').config()
+
 const { PORT } = process.env
-const http = require('http')
-const app = require('./app')
-const server = http.createServer(app)
-const mongoose = require('./model')
+const http     = require('http')
+const app      = require('./app')
+const server   = http.createServer(app)
+const mongoose = require('mongoose')
 
 const start = async () => {
     try {
@@ -15,26 +16,3 @@ const start = async () => {
 }
 
 start()
-
-
-
-// userInstance.email = 'test@test.com'
-// userInstance.password = '12341234'
-// userInstance.userType = 'admin'
-// userInstance.username = 'abc'
-
-// userInstance.save((err) => {
-//     if(err){
-//         console.log('err' + err)
-//     }else{
-//         console.log('success')
-//     }
-// });
-
-// UserModel.deleteOne({'username': '지영'}, (err, docs) => {
-//     if(err){
-//         console.log('err' + err)
-//     }else{
-//         console.log(docs)
-//     }
-// })
