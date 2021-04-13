@@ -1,4 +1,5 @@
 const User = require('../model/UserModel')
+const bcrypt = require('bcryptjs')
 
 const createUser = async(email, password, userType, username) => {
     const userInfo = {
@@ -12,8 +13,30 @@ const createUser = async(email, password, userType, username) => {
     return user.save()
 }
 
+const matchUser = async(res, email, inputPassword) => {
+    const foundUser = await User.findByEmail(email)
+
+    if (!foundUser) {
+        return res.status(404).json({
+            message: 'USER_DOES_NOT_EXIST'
+        })
+    }
+
+    const { id, password: hashedPassword } = foundUser
+    const isValidPassword = await bcrypt.compare(inputPassword, hashedPassword)
+
+    if (!isValidPassword) {
+        return res.status(404).json({
+            message: 'INVAILD_PASSWORD'
+        })
+    }
+
+    return foundUser
+}
+
 module.exports = {
     createUser,
+    matchUser,
 }
 
 

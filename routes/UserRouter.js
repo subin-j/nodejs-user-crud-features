@@ -32,23 +32,9 @@ const signUp = async (req, res, next) => {
 const logIn = async (req, res, next) => {
     try {
         const { email, password: inputPassword } = req.body
-        const foundUser = await User.findByEmail(email)
-
-        if (!foundUser) {
-            return res.status(404).json({
-                message: 'USER_DOES_NOT_EXIST'
-            })
-        }
-
-        const { id, password: hashedPassword } = foundUser
-        const isValidPassword = await bcrypt.compare(inputPassword, hashedPassword)
-
-        if (!isValidPassword) {
-            return res.status(404).json({
-                message: 'INVAILD_PASSWORD'
-            })
-        }
-
+        const foundUser = await UserService.matchUser(res, email, inputPassword)
+        
+        console.log(foundUser)
         const token = foundUser.generateAuthToken()
         return res.status(200).json({
             message: 'LOGIN_SUCCESS',
@@ -60,9 +46,17 @@ const logIn = async (req, res, next) => {
     }
 }
 
-const deleteUser = async (req, res, next) => {
+const deleteAccount = async (req, res, next) => {
     try {
-        console.log('delete?')
+        const { email, password: inputPassword } = req.body
+        const foundUser = await UserService.matchUser(res, email, inputPassword)
+        
+        foundUser.deletedAt = Date()
+        await foundUser.save()
+
+        return res.status(203).json({
+            message: 'USER_DELETE_SUCCESS'
+        })
 
     } catch (err) {
         next(err)
@@ -71,5 +65,6 @@ const deleteUser = async (req, res, next) => {
 
 router.post('/signup', signUp)
 router.post('/login', logIn)
+router.delete('', deleteAccount)
 
 module.exports = router
