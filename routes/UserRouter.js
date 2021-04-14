@@ -8,7 +8,6 @@ const { UserService } = require('../services')
 const User            = require('../model/UserModel')
 const authMiddleware  = require('../middlewares/auth')
 
-
 const signUp = async (req, res, next) => {
     try {
         const { email, password, userType, username } = req.body
@@ -35,6 +34,13 @@ const signUp = async (req, res, next) => {
 const logIn = async (req, res, next) => {
     try {
         const { email, password: inputPassword } = req.body
+                    
+        if (email === undefined || inputPassword === undefined) {
+            return res.status(400).json({
+                message: 'KEY_ERROR'
+            })
+        }
+
         const foundUser = await UserService.matchUser(res, email, inputPassword)
         
         const token = foundUser.generateAuthToken()
@@ -44,7 +50,7 @@ const logIn = async (req, res, next) => {
         })
 
     } catch (err) {
-        next(err)
+        return res.status(400).json({message: err.message})
     }
 }
 
@@ -62,8 +68,8 @@ const deleteAccount = async (req, res, next) => {
         foundUser.deletedAt = Date()
         await foundUser.save()
 
-        return res.status(203).json({
-            message: 'USER_DELETE_SUCCESS'
+        return res.status(202).json({
+            message: 'DELETE_SUCCESS'
         })
 
     } catch (err) {
@@ -73,16 +79,30 @@ const deleteAccount = async (req, res, next) => {
 
 const updateAccount = async (req, res, next) => {
     try {
-        
+        const { username, password } = req.body
+
+        if (username) {
+            req.user.username = username
+        }
+
+        if (password) {
+            req.user.password = password
+        }
+
+        await req.user.save()
+        return res.status(200).json({
+            message: 'USER_UPDATE_SUCCESS'
+        })
+
     } catch (err) {
         next(err)
     }
 }
 
-
 router.post('/signup', signUp)
 router.post('/login', logIn)
-router.use('', authMiddleware)
-router.delete('', deleteAccount)
+
+router.delete('', authMiddleware ,deleteAccount)
+router.patch('', authMiddleware, updateAccount)
 
 module.exports = router

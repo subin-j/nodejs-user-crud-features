@@ -12,21 +12,13 @@ const authMiddleware = async (req, res, next) => {
                 message: 'TOKEN_DOES_NOT_EXIST'
             })
         }
+        
+        const decoded = jwt.verify(token, SECRET_KEY)
+        const { user_id } = decoded
 
-        jwt.verify(token, SECRET_KEY, async (err, decoded) => {
-            if (err) {
-                return res.status(400).json({
-                    message: err.message
-                })
-            }
-            
-            const { user_id } = decoded
-
-            req.user = await User.findById(user_id).exec()
-        })
-
+        req.user = await User.findById(user_id).exec()
         next()
-    
+        
     } catch (err) {
         return res.status(400).json({
             message: err.message

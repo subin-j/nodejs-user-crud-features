@@ -17,18 +17,13 @@ const matchUser = async(res, email, inputPassword) => {
     const foundUser = await User.findByEmail(email)
 
     if (!foundUser) {
-        return res.status(404).json({
-            message: 'USER_DOES_NOT_EXIST'
-        })
+        throw new Error('USER_DOES_NOT_EXIST')
     }
 
-    const { id, password: hashedPassword } = foundUser
-    const isValidPassword = await bcrypt.compare(inputPassword, hashedPassword)
+    const isValidPassword = await bcrypt.compare(inputPassword, foundUser.password)
 
     if (!isValidPassword) {
-        return res.status(404).json({
-            message: 'INVAILD_PASSWORD'
-        })
+        throw new Error('INVALID_PASSWORD')
     }
 
     return foundUser
@@ -43,4 +38,3 @@ module.exports = {
 
 // const test = await User.findByEmail("test1333@test1.com")
 // console.log(`ddddddddddddd ${test}`)
-
