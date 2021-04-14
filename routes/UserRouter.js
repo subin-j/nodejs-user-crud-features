@@ -1,10 +1,13 @@
 const express = require('express')
 const router  = express.Router()
 
-const User = require('../model/UserModel')
-const { UserService } = require('../services')
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+const jwt    = require('jsonwebtoken')
+
+const { UserService } = require('../services')
+const User            = require('../model/UserModel')
+const authMiddleware  = require('../middlewares/auth')
+
 
 const signUp = async (req, res, next) => {
     try {
@@ -34,7 +37,6 @@ const logIn = async (req, res, next) => {
         const { email, password: inputPassword } = req.body
         const foundUser = await UserService.matchUser(res, email, inputPassword)
         
-        console.log(foundUser)
         const token = foundUser.generateAuthToken()
         return res.status(200).json({
             message: 'LOGIN_SUCCESS',
@@ -50,7 +52,13 @@ const deleteAccount = async (req, res, next) => {
     try {
         const { email, password: inputPassword } = req.body
         const foundUser = await UserService.matchUser(res, email, inputPassword)
-        
+    
+        if (foundUser.id !== req.user.id) {
+            return res.status(400).json({
+                message: 'USER_DOES_NOT_MATCH_WITH_TOKEN'
+            })
+        }
+
         foundUser.deletedAt = Date()
         await foundUser.save()
 
@@ -63,8 +71,18 @@ const deleteAccount = async (req, res, next) => {
     }
 } 
 
+const updateAccount = async (req, res, next) => {
+    try {
+        
+    } catch (err) {
+        next(err)
+    }
+}
+
+
 router.post('/signup', signUp)
 router.post('/login', logIn)
+router.use('', authMiddleware)
 router.delete('', deleteAccount)
 
 module.exports = router

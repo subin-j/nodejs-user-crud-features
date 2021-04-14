@@ -8,14 +8,27 @@ const UserSchema = new Schema({
     email: {
         type: String,
         unique: true,
-        required: true
+        required: true,
+        validate(value) {
+            const emailRegEx = /^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9_-]+\.[a-zA-Z-.]+$/
+            if (!emailRegEx.test(value)) {
+                throw new Error("Email is not valid")
+            }
+        }
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        validate(value) {
+            const passwordRegEx = /^(?=.*[!-/:-@])(?!.*[ㄱ-ㅣ가-힣]).{8,20}$/
+            if (!passwordRegEx.test(value)) {
+                throw new Error("Password is not valid")
+            }
+        }
     },
     userType: {
         type: String,
+        enum: ['user', 'admin'],
         required: true
     },
     username: {
