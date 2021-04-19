@@ -1,14 +1,17 @@
-## Node.js CRUD for user feature.
+# Node.js Express + MongoDB User app CRUD project.
+
+## User app CRUD features.
 ___
 ### 1.Sign Up(CREATE)
 
-- middleware for authorization
+- middleware added for authorization.
 
 ___
 ### 2.Account profile edit& delete(UPDATE)
 
-- 탈퇴는 'deleted_at' field
+- soft-delete with 'deleted_at' field update.
 ___
 ### 3.회원 리스트(READ)
 
-- 속성별로 filter 기능  
+- list view for users.
+- filter option added.
